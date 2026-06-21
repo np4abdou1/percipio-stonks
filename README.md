@@ -95,7 +95,7 @@ To load the extension in developer mode, follow these steps:
 2. Click the **START AUTOMATION** button.
 3. The extension will automatically transition between sections:
    - Mark videos as watched
-   - Bypassing Knowledge Checks
+   - Bypassing Knowledge Checks ( not important any more )
    - Solving assessments
    - Navigating to the next course in the learning path.
 
