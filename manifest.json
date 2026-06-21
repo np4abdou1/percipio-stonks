@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Percipio Stonks",
+  "version": "1.0",
+  "description": "Automatically answers Percipio assessments using AI",
+  "icons": { "48": "icon.png", "128": "icon.png" },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://ofppt.percipio.com/*",
+    "https://opencode.ai/*",
+    "https://openrouter.ai/*"
+  ],
+  "content_scripts": [{
+    "matches": ["https://ofppt.percipio.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_end"
+  }],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
