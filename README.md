@@ -1,0 +1,166 @@
+# 🧠 Percipio Stonks
+
+<p align="center">
+  <img src="icon.png" width="96" alt="Percipio Stonks Logo">
+</p>
+
+<p align="center">
+  <b>Ultimate browser extension to automate and expedite course completion on Percipio.</b><br>
+  Marks videos as watched · Bypasses knowledge checks · Answers assessments with state-of-the-art AI.
+</p>
+
+<p align="center">
+  <a href="https://github.com/np4abdou1/percipio-stonks"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/platform-Chrome%20%7C%20Edge%20%7C%20Brave-lightgrey" alt="Platforms">
+  <img src="https://img.shields.io/badge/PRs-welcome-blueviolet" alt="PRs Welcome">
+</p>
+
+---
+
+## 🎨 Interface Showcase
+
+<p align="center">
+  <img src="showcase.png" alt="Percipio Stonks Panel UI" width="600">
+</p>
+
+---
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [How It Works](#-how-it-works)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Usage Guide](#-usage-guide)
+- [Keyboard Controls](#-keyboard-controls)
+- [Troubleshooting](#-troubleshooting)
+- [License](#-license)
+
+---
+
+## 🚀 Features
+
+| Mode | Target Pages | Automation Action |
+|:---|:---|:---|
+| **Videos / Resources** | `/videos/`, `/courses/<id>` | Marks all video content and files as completed directly via Percipio's internal APIs. |
+| **Knowledge Check** | `/knowledgeCheck/` | Queries and submits the exact correct responses instantly using Percipio's private GraphQL/REST endpoints. |
+| **Assessment (Exams)** | `/assessment/`, `/questions` | Leverages AI to answer multiple-choice, multi-select, matching, and visual (image-based) questions. |
+
+### Extra Quality of Life Features
+- 🌓 **Adaptive Theme**: Toggle between Light and Dark mode dynamically.
+- 🔄 **Draggable HUD**: Click and drag the panel header to reposition it anywhere on your screen.
+- 🍩 **3D ASCII Donut**: Features a live mathematical torus animation rotating in real-time.
+- 🛡️ **Fail-safe Logic**: Retries questions, auto-dismisses exit modals, and stops auto-run once a passing grade is achieved.
+
+---
+
+## ⚡ How It Works
+
+```mermaid
+flowchart TD
+    A[Open Percipio Course Page] --> B{Scan Page URL & DOM}
+    B -->|Videos / Resources| C[Call Percipio API to Mark Done]
+    B -->|Knowledge Check| D[Solve via Percipio GraphQL API]
+    B -->|Assessment / Exam| E{Check Question Type}
+    
+    E -->|Text Question| F[Send prompt to AI LLM]
+    E -->|Image/Visual Question| G[Extract canvas/image & query Vision AI]
+    
+    F --> H[Select Answer Option]
+    G --> H
+    H --> I[Submit & Verify Feedback]
+    I --> J{Final Question?}
+    J -->|No| E
+    J -->|Yes| K[Auto-complete Assessment]
+```
+
+---
+
+## 📦 Installation
+
+To load the extension in developer mode, follow these steps:
+
+1. Clone this repository locally:
+   ```bash
+   git clone https://github.com/np4abdou1/percipio-stonks.git
+   cd percipio-stonks
+   ```
+2. Open your chromium-based browser (Chrome, Edge, Brave, Opera) and navigate to `chrome://extensions`.
+3. Toggle the **Developer mode** switch in the top-right corner.
+4. Click the **Load unpacked** button in the top-left corner.
+5. Select the repository root folder (`percipio-stonks`).
+
+---
+
+## ⚙️ Configuration
+
+> [!NOTE]
+> AI configuration is only required for the **Assessment** solving phase. Video marking and Knowledge Checks run purely on internal API automation and do not require any configuration.
+
+Click the **gear icon (⚙)** in the panel UI to configure your AI providers.
+
+### API Credentials
+
+| Option Field | Default Endpoint | Supported Models |
+|:---|:---|:---|
+| **Text API URL** | `https://opencode.ai/zen/v1/chat/completions` | `deepseek-v4-flash-free`, any OpenAI-compatible models |
+| **Vision API URL** | `https://openrouter.ai/api/v1/chat/completions` | `qwen/qwen3.5-flash-02-23`, `google/gemini-2.5-flash:free` |
+
+> [!IMPORTANT]
+> A fallback chain is automatically configured: if your custom API endpoint fails, it will attempt to use public free endpoints to keep the solver running smoothly.
+
+---
+
+## 🎮 Usage Guide
+
+1. Navigate to any Percipio course page.
+2. Click the **START AUTOMATION** button.
+3. The extension will automatically transition between sections:
+   - Mark videos as watched
+   - Bypassing Knowledge Checks
+   - Solving assessments
+   - Navigating to the next course in the learning path.
+
+---
+
+## ⌨️ Keyboard Controls
+
+Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to force-reinitialize the workspace environment, or use the HUD controls below:
+
+- <kbd>☰</kbd> Collapse or expand the interface panel.
+- <kbd>↻</kbd> Re-scan current active webpage context.
+- <kbd>☀</kbd> / <kbd>☾</kbd> Switch theme palette.
+- <kbd>🗑</kbd> Clear execution log messages.
+
+---
+
+## 🔧 Troubleshooting
+
+<details>
+<summary><b>Click to expand troubleshooting steps</b></summary>
+
+### 1. Extension context invalidated
+If you update or reload the extension while on an open Percipio tab, you must refresh the tab to establish a connection to the new service worker.
+
+### 2. Vision API errors on matching images
+If image questions fail, ensure your vision key is set to a model supporting image payloads (e.g. `gpt-4o-mini`, `gemini-2.5-flash`).
+
+### 3. Exit modal loops
+The extension automatically hooks and cancels confirmation popups asking if you want to abort the exam. If blocked, click once inside the page canvas to focus.
+
+</details>
+
+---
+
+## 📜 License
+
+```
+MIT License - Copyright (c) 2026 Joyboy & np4abdou1
+```
+
+---
+
+<p align="center">
+  MADE BY JOYBOY
+</p>
