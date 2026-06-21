@@ -240,20 +240,28 @@
   <div id="pai-main">
     <div id="pai-header">
       <div class="pai-dot off" id="pai-dot"></div>
-      <span class="pai-title"><span class="accent">Percipio</span><span class="dim">AI</span><span class="pai-mode-badge" id="pai-mode-badge">${globalState.MODE === 'KNOWLEDGE_CHECK' ? 'KC' : globalState.MODE === 'VIDEOS' ? 'VID' : globalState.MODE === 'ASSESSMENT' ? 'EXAM' : globalState.MODE === 'JOURNEY' ? 'PATH' : '?'}</span></span>
+      <span class="pai-title"><span class="accent">Percipio</span><span class="dim">STONKS</span><span class="pai-mode-badge" id="pai-mode-badge">${globalState.MODE === 'KNOWLEDGE_CHECK' ? 'KC' : globalState.MODE === 'VIDEOS' ? 'VID' : globalState.MODE === 'ASSESSMENT' ? 'EXAM' : globalState.MODE === 'JOURNEY' ? 'PATH' : '?'}</span></span>
       <div class="pai-actions">
-        <button id="pai-toggle-btn" title="Collapse panel"><img src="https://img.icons8.com/ios-glyphs/24/menu.png" width="20" height="20" alt="☰" style="filter:var(--icon-filter);display:block"></button>
-        <button id="pai-rld-btn" title="Re-scan page"><img src="https://img.icons8.com/ios-glyphs/24/refresh.png" width="22" height="22" alt="↻" style="filter:var(--icon-filter);display:block"></button>
-        <button id="pai-theme-btn" title="Toggle theme"><img class="sun" src="https://img.icons8.com/ios-glyphs/24/sun.png" width="22" height="22" alt="☀" style="filter:var(--icon-filter);display:block"><img class="moon" src="https://img.icons8.com/ios-glyphs/24/moon.png" width="22" height="22" alt="☾" style="filter:var(--icon-filter);display:none"></button>
-        <button id="pai-clr-btn" title="Clear log"><img src="https://img.icons8.com/ios-glyphs/24/trash.png" width="22" height="22" alt="🗑" style="filter:var(--icon-filter);display:block"></button>
+        <button id="pai-toggle-btn" title="Collapse panel"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+        <button id="pai-rld-btn" title="Re-scan page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></button>
+        <button id="pai-theme-btn" title="Toggle theme">
+          <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button id="pai-clr-btn" title="Clear log"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
       </div>
     </div>
-    <button id="pai-btn" class="pai-start-btn"><img src="https://img.icons8.com/ios-glyphs/24/play--v1.png" width="20" height="20" alt="▶" style="filter:invert(1);display:block"><span>START AUTOMATION</span></button>
+    <button id="pai-btn" class="pai-start-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>START AUTOMATION</span></button>
     <pre id="pai-donut"></pre>
     <div id="pai-body">
       <div id="pai-log"></div>
     </div>
-    <div style="padding:8px 18px;text-align:center;font-size:11px;color:var(--text3);letter-spacing:2px;flex-shrink:0;border-top:1px solid var(--border)"><a href="https://github.com/np4abdou1/percipio-stonks" target="_blank" style="color:var(--accent);text-decoration:none">github.com/np4abdou1/percipio-stonks</a></div>
+    <div style="padding:10px 18px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);flex-shrink:0;">
+      <div style="font-size:11px;color:var(--text3);letter-spacing:2px;font-weight:600">MADE BY JOYBOY</div>
+      <a href="https://github.com/np4abdou1/percipio-stonks" target="_blank" style="padding:6px 12px;background:var(--bg3);color:var(--text);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;border:1px solid var(--border2);display:flex;align-items:center;gap:6px;transition:background .15s">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> GitHub
+      </a>
+    </div>
   </div>
 </div>
   `;
@@ -432,7 +440,7 @@
                           : newMode === 'JOURNEY' ? 'PATH'
                           : '?';
     setRunning(false);
-    if (newMode === 'UNKNOWN') logMsg('error', 'Not on a supported page.');
+    if (newMode === 'UNKNOWN') logMsg('error', '⛔ Not on a supported course page. Go to a video, knowledge check, or assessment!');
   };
 
   /* ── Panel toggle ── */
@@ -457,13 +465,13 @@
     if (globalState.MODE === 'ASSESSMENT') {
       btn.classList.add('pai-golden-btn');
       btn.innerHTML = state
-        ? '<img src="https://img.icons8.com/ios-glyphs/24/pause.png" width="20" height="20" alt="⏸" style="display:block"><span>STOP SOLVER</span>'
-        : '<img src="https://img.icons8.com/ios-glyphs/24/crown.png" width="22" height="22" alt="👑" style="display:block"><span>START</span>';
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg><span>STOP SOLVER</span>'
+        : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><span>START</span>';
     } else {
       btn.classList.remove('pai-golden-btn');
       btn.innerHTML = state
-        ? '<img src="https://img.icons8.com/ios-glyphs/24/pause.png" width="20" height="20" alt="⏸" style="filter:invert(1);display:block"><span>STOP AUTOMATION</span>'
-        : '<img src="https://img.icons8.com/ios-glyphs/24/play--v1.png" width="20" height="20" alt="▶" style="filter:invert(1);display:block"><span>START AUTOMATION</span>';
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg><span>STOP AUTOMATION</span>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>START AUTOMATION</span>';
     }
     dot.className = state ? 'pai-dot' : 'pai-dot off';
     body.style.background = state ? 'var(--bg3)' : 'var(--bg)';
@@ -832,7 +840,7 @@
       } else if (globalState.MODE === 'ASSESSMENT') {
         await runAssessment();
       } else {
-        logMsg('error', 'Not on a supported Percipio page.');
+        logMsg('error', '⛔ Not on a supported course page. Go to a video, knowledge check, or assessment!');
       }
     } catch (err) {
       logMsg('error', `${err.message}`);
