@@ -38,6 +38,8 @@
 
 ---
 
+
+NOTE : MUST BE USING ARABIC IN ofppt.percipio.com FOR IT TO WORK
 ## 🚀 Features
 
 | Mode | Target Pages | Automation Action |
