@@ -2,13 +2,10 @@
   "manifest_version": 3,
   "name": "Percipio Stonks",
   "version": "1.0",
-  "description": "Automatically answers Percipio assessments using AI",
+  "description": "Automatically completes courses, knowledge checks, and assessments on Percipio",
   "icons": { "48": "icon.png", "128": "icon.png" },
-  "permissions": ["storage"],
   "host_permissions": [
-    "https://ofppt.percipio.com/*",
-    "https://opencode.ai/*",
-    "https://openrouter.ai/*"
+    "https://ofppt.percipio.com/*"
   ],
   "content_scripts": [{
     "matches": ["https://ofppt.percipio.com/*"],

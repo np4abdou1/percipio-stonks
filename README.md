@@ -1,4 +1,4 @@
-# 🧠 Percipio Stonks
+<h1 align="center">🧠 Percipio Stonks</h1>
 
 <p align="center">
   <img src="icon.png" width="96" alt="Percipio Stonks Logo">
@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Ultimate browser extension to automate and expedite course completion on Percipio.</b><br>
-  Marks videos as watched · Bypasses knowledge checks · Answers assessments with state-of-the-art AI.
+  Marks videos as watched · Bypasses knowledge checks · Instantly solves assessments via GraphQL exploits.
 </p>
 
 <p align="center">
@@ -31,7 +31,6 @@
 - [Features](#-features)
 - [How It Works](#-how-it-works)
 - [Installation](#-installation)
-- [Configuration](#-configuration)
 - [Usage Guide](#-usage-guide)
 - [Keyboard Controls](#-keyboard-controls)
 - [Troubleshooting](#-troubleshooting)
@@ -45,7 +44,7 @@
 |:---|:---|:---|
 | **Videos / Resources** | `/videos/`, `/courses/<id>` | Marks all video content and files as completed directly via Percipio's internal APIs. |
 | **Knowledge Check** | `/knowledgeCheck/` | Queries and submits the exact correct responses instantly using Percipio's private GraphQL/REST endpoints. |
-| **Assessment (Exams)** | `/assessment/`, `/questions` | Leverages AI to answer multiple-choice, multi-select, matching, and visual (image-based) questions. |
+| **Assessment (Exams)** | `/assessment/`, `/questions` | Leverages a zero-latency discovery exploit using Percipio's GraphQL endpoint to fetch correct choices and auto-submits a perfect score. |
 
 ### Extra Quality of Life Features
 - 🌓 **Adaptive Theme**: Toggle between Light and Dark mode dynamically.
@@ -57,22 +56,19 @@
 
 ## ⚡ How It Works
 
+No AI/LLM models or API keys are required. The assessment solver directly intercepts Percipio's GraphQL API through a two-phase process:
+
 ```mermaid
 flowchart TD
-    A[Open Percipio Course Page] --> B{Scan Page URL & DOM}
-    B -->|Videos / Resources| C[Call Percipio API to Mark Done]
-    B -->|Knowledge Check| D[Solve via Percipio GraphQL API]
-    B -->|Assessment / Exam| E{Check Question Type}
-    
-    E -->|Text Question| F[Send prompt to AI LLM]
-    E -->|Image/Visual Question| G[Extract canvas/image & query Vision AI]
-    
-    F --> H[Select Answer Option]
-    G --> H
-    H --> I[Submit & Verify Feedback]
-    I --> J{Final Question?}
-    J -->|No| E
-    J -->|Yes| K[Auto-complete Assessment]
+    A[Start Assessment Automation] --> B[Initialize Assessment Challenge]
+    B --> C{Questions cached locally?}
+    C -->|No| D[Discovery Round: Submit mock answers]
+    D --> E[Query correct choices via getSubmission API]
+    E --> F[Cache correct answers in localStorage]
+    F --> B
+    C -->|Yes| G[Start Final Challenge Round]
+    G --> H[Submit 100% correct answers sequentially]
+    H --> I[Score 100% and auto-navigate to next course]
 ```
 
 ---
@@ -90,25 +86,6 @@ To load the extension in developer mode, follow these steps:
 3. Toggle the **Developer mode** switch in the top-right corner.
 4. Click the **Load unpacked** button in the top-left corner.
 5. Select the repository root folder (`percipio-stonks`).
-
----
-
-## ⚙️ Configuration
-
-> [!NOTE]
-> AI configuration is only required for the **Assessment** solving phase. Video marking and Knowledge Checks run purely on internal API automation and do not require any configuration.
-
-Click the **gear icon (⚙)** in the panel UI to configure your AI providers.
-
-### API Credentials
-
-| Option Field | Default Endpoint | Supported Models |
-|:---|:---|:---|
-| **Text API URL** | `https://opencode.ai/zen/v1/chat/completions` | `deepseek-v4-flash-free`, any OpenAI-compatible models |
-| **Vision API URL** | `https://openrouter.ai/api/v1/chat/completions` | `qwen/qwen3.5-flash-02-23`, `google/gemini-2.5-flash:free` |
-
-> [!IMPORTANT]
-> A fallback chain is automatically configured: if your custom API endpoint fails, it will attempt to use public free endpoints to keep the solver running smoothly.
 
 ---
 
@@ -143,8 +120,8 @@ Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to force-reinitialize th
 ### 1. Extension context invalidated
 If you update or reload the extension while on an open Percipio tab, you must refresh the tab to establish a connection to the new service worker.
 
-### 2. Vision API errors on matching images
-If image questions fail, ensure your vision key is set to a model supporting image payloads (e.g. `gpt-4o-mini`, `gemini-2.5-flash`).
+### 2. Missing authorization tokens
+The solver relies on your active browser session (`id_token` in `localStorage`). Ensure you are logged into your organization's Percipio platform before initiating automation.
 
 ### 3. Exit modal loops
 The extension automatically hooks and cancels confirmation popups asking if you want to abort the exam. If blocked, click once inside the page canvas to focus.
