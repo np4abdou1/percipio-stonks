@@ -1,5 +1,6 @@
 (function() {
   if (document.getElementById('pai-root')) return;
+  const PERCIPIO_ORIGIN = window.location.origin;
 
   /* ── Config ── */
   const sendMsg = async msg => {
@@ -32,7 +33,7 @@
             const createSub = d?.data?.createChallengeSubmission;
             if (createSub?.assessmentsChallengeQuestionUuid) {
               const uuid = createSub.assessmentsChallengeQuestionUuid;
-              const subResp = await origFetch('https://ofppt.percipio.com/api/graphql3?query=getSubmission', {
+              const subResp = await origFetch(PERCIPIO_ORIGIN + '/api/graphql3?query=getSubmission', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('id_token')}` },
                 body: JSON.stringify([{
@@ -57,14 +58,14 @@
 
   let config = { apiKey: '', apiUrl: '', model: '', theme: 'light', visionKey: '', visionModel: '', visionUrl: '' };
   loadConfig().then(c => {
-    config = c;
-    if (c.theme === 'dark') { panel.classList.add('pai-dark'); themeBtn.innerHTML = '&#127769;'; }
+    config = { ...config, ...c };
+    if (config.theme === 'dark') { panel.classList.add('pai-dark'); themeBtn.innerHTML = '&#127769;'; }
     else { panel.classList.remove('pai-dark'); themeBtn.innerHTML = '&#127774;'; }
-    setRunning(false);
+    if (!running) setRunning(false);
   });
 
   /* ── Mode detection ── */
-  const URL = window.location.href;
+  const URL = window.location.pathname;
   const globalState = {
     MODE: URL.includes('/knowledgeCheck/') ? 'KNOWLEDGE_CHECK'
         : URL.includes('/videos/')          ? 'VIDEOS'
@@ -287,7 +288,7 @@
 
   function startDonut() {
     const pre = document.getElementById('pai-donut');
-    if (!pre) return;
+    if (!pre || !panel.classList.contains('open') || running) return;
     const W = 36, H = 14;
     const chars = '.,-~:;=!*#$@';
     let A = 0, B = 0;
@@ -358,7 +359,6 @@
     statusEl.className = `e ${type} status-entry`;
     statusEl.textContent = msg;
     body.scrollTop = body.scrollHeight;
-    panel.classList.add('open');
   }
 
   function clearStatus() {
@@ -399,7 +399,6 @@
     e.textContent = msg;
     log.appendChild(e);
     body.scrollTop = body.scrollHeight;
-    panel.classList.add('open');
     return e;
   }
 
@@ -411,7 +410,6 @@
     loadingEl.innerHTML = '<div class="pai-spinner"></div><span>AI thinking...</span>';
     log.appendChild(loadingEl);
     body.scrollTop = body.scrollHeight;
-    panel.classList.add('open');
   }
 
   function hideLoading() {
@@ -423,7 +421,7 @@
   rldBtn.onclick = () => {
     if (running) { logMsg('error', 'Cannot re-scan while running'); return; }
     log.innerHTML = '';
-    const u = window.location.href;
+    const u = window.location.pathname;
     const newMode = u.includes('/knowledgeCheck/') ? 'KNOWLEDGE_CHECK'
                   : u.includes('/videos/')          ? 'VIDEOS'
                   : u.includes('/questions')        ? 'ASSESSMENT'
@@ -450,6 +448,12 @@
     if (opening) startDonut();
     else cancelAnimationFrame(donutAnimId);
   };
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type !== 'TOGGLE_PANEL') return;
+    document.getElementById('pai-toggle-btn').click();
+    sendResponse({ open: panel.classList.contains('open') });
+  });
 
   /* ── Theme toggle ── */
   themeBtn.onclick = async e => {
@@ -494,7 +498,7 @@
         } title __typename
       }
     }`;
-    const resp = await fetch('https://ofppt.percipio.com/api/graphql3?query=LPKnowledgeCheck', {
+    const resp = await fetch(PERCIPIO_ORIGIN + '/api/graphql3?query=LPKnowledgeCheck', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify([{ operationName: 'LPKnowledgeCheck', variables: { id: globalState.assessmentId, isInteractiveKC: false }, query: q }]),
@@ -523,6 +527,18 @@
     const b = $(`[data-marker="${marker}"]`);
     if (b) { b.click(); return true; }
     return false;
+  }
+
+  function dismissExitModal() {
+    // Only cancel a visible exit confirmation; leave other dialogs alone.
+    for (const dialog of $$('[role="dialog"], [role="alertdialog"]')) {
+      if (!dialog.getClientRects().length || !/\b(exit|leave|quit|abort)\b|مغادرة|الخروج/i.test(dialog.textContent)) continue;
+      const cancel = [...dialog.querySelectorAll('button')].find(button =>
+        !button.disabled && button.getClientRects().length &&
+        /^(cancel|stay(?: here| on (?:this|the) page)?|إلغاء|البقاء)$/i.test(button.textContent.trim())
+      );
+      if (cancel) cancel.click();
+    }
   }
 
   async function runKnowledgeCheck() {
@@ -593,7 +609,7 @@
     if (!token) { logMsg('error', 'No auth token found. Refresh the page.'); return; }
     if (!globalState.courseId) { logMsg('error', 'Not on a course page'); return; }
 
-    const headers = { authorization: `Bearer ${token}`, 'content-type': 'application/json', origin: 'https://ofppt.percipio.com', 'user-agent': navigator.userAgent };
+    const headers = { authorization: `Bearer ${token}`, 'content-type': 'application/json', origin: PERCIPIO_ORIGIN };
 
     setStatus('hack', '🔥 INITIALIZING VIDEO MARKER...');
 
@@ -631,7 +647,7 @@
           __typename
         }
       }`;
-      const courseResp = await fetch('https://ofppt.percipio.com/api/graphql2?query=courseQueryWithBadging', {
+      const courseResp = await fetch(PERCIPIO_ORIGIN + '/api/graphql2?query=courseQueryWithBadging', {
         method: 'POST', headers,
         body: JSON.stringify([{ operationName: 'courseQueryWithBadging', variables: { uuid: globalState.courseId }, query: courseQ }]),
       });
@@ -674,7 +690,7 @@
       logMsg('info', `⏳ Progress: ${done + 1}/${items.length} (${item.type} ${item.uuid.substring(0,8)}...)`);
 
       if (item.type === 'RESOURCE') {
-        const r = await fetch('https://ofppt.percipio.com/api/graphql3?query=mutation:upsertContentResourceConsumption', {
+        const r = await fetch(PERCIPIO_ORIGIN + '/api/graphql3?query=mutation:upsertContentResourceConsumption', {
           method: 'POST', headers,
           body: JSON.stringify([{ operationName: 'upsertContentResourceConsumption', variables: { input: { contentId: item.uuid, parentId: globalState.courseId, instanceNumber: 1 } }, query: 'mutation upsertContentResourceConsumption($input: ContentResourceConsumptionInput) { upsertContentResourceConsumption(input: $input) { id orgId userId contentId parentId __typename } }' }]),
         });
@@ -685,12 +701,12 @@
       } else {
         const sid = crypto.randomUUID();
         const cc = { uuid: item.uuid, type: 'VIDEO', parentUuid: globalState.courseId };
-        const r1 = await fetch('https://ofppt.percipio.com/api/graphql2?query=mutation:contentLaunchEvent', {
+        const r1 = await fetch(PERCIPIO_ORIGIN + '/api/graphql2?query=mutation:contentLaunchEvent', {
           method: 'POST', headers,
           body: JSON.stringify([{ operationName: 'contentLaunchEvent', variables: { contentContext: cc, eventContext: { action: 'ARRIVED', sessionId: sid, viewParams: [{ paramName: 'COURSE_TOC', paramValue: globalState.courseId }], fromWithinView: 'COURSE_TOC', source: null, applicationType: 'PERCIPIO_WEB', deviceType: 'DESKTOP', userAgent: navigator.userAgent, instanceNumber: 1 } }, query: 'mutation contentLaunchEvent($contentContext: BFF_contentContext!, $eventContext: BFF_launchEventContext!) { enrichmentLaunchEvent(contentContext: $contentContext, eventContext: $eventContext) { success validation __typename } }' }] ),
         });
         await sleep(80);
-        const r2 = await fetch('https://ofppt.percipio.com/api/graphql2?query=mutation:contentConsumption', {
+        const r2 = await fetch(PERCIPIO_ORIGIN + '/api/graphql2?query=mutation:contentConsumption', {
           method: 'POST', headers,
           body: JSON.stringify([{ operationName: 'contentConsumption', variables: { contentContext: cc, eventContext: { action: 'CONSUMED', sessionId: sid, playbackMultiplier: 1, sessionDurationSeconds: 9999, startPos: '0', endPos: '9999', positionType: 'SECONDS', instanceNumber: 1 }, sessionId: sid }, query: 'mutation contentConsumption($contentContext: BFF_contentContext!, $eventContext: BFF_eventContext!) { enrichmentConsumptionEvent(contentContext: $contentContext, eventContext: $eventContext) { success validation __typename } }' }] ),
         });
@@ -714,7 +730,7 @@
     setStatus('hack', `🎯 ${document.title.substring(0, 60)}`);
     setStatus('info', '🚀 API-based assessment solver');
 
-    const api = 'https://ofppt.percipio.com/api/graphql3';
+    const api = PERCIPIO_ORIGIN + '/api/graphql3';
     const token = localStorage.getItem('id_token');
     const h = {'authorization':`Bearer ${token}`,'content-type':'application/json','x-sksfront-features':'MultipleCompletions-Admin,LPDynamicContentRestart,NASBACPEExpiration,PageBuilderQ4,MyLearningRedesign'};
     const cid = window.location.href.match(/\/courses\/([^/]+)/)?.[1];
@@ -806,10 +822,13 @@
       logMsg('summary', '✅ PASSED! Score: ' + pct + '%');
       sessionStorage.setItem('pai_solved_' + cid + '_' + aid, '1');
       setRunning(false);
-      sessionStorage.setItem('pai_chain_active', '1');
-      clickNextCourseLink();
+      if (!clickNextCourseLink()) {
+        sessionStorage.removeItem('pai_chain_active');
+        logMsg('info', 'No next course link is available on this page.');
+      }
       return;
     } else {
+      sessionStorage.removeItem('pai_chain_active');
       logMsg('summary', '❌ FAILED! Score: ' + pct + '%');
     }
   }
@@ -829,13 +848,23 @@
      MAIN TRIGGER
      ════════════════════════════════════════════ */
   btn.onclick = async () => {
-    if (running) { setRunning(false); logMsg('error', 'Stopped by user'); return; }
+    if (running) {
+      sessionStorage.removeItem('pai_chain_active');
+      setRunning(false);
+      logMsg('error', 'Stopped by user');
+      return;
+    }
+    if (!['VIDEOS', 'COURSE_TOC', 'KNOWLEDGE_CHECK', 'ASSESSMENT'].includes(globalState.MODE)) {
+      logMsg('error', 'Open a course, video, knowledge check, or assessment to start.');
+      return;
+    }
+    sessionStorage.setItem('pai_chain_active', '1');
     setRunning(true);
 
     try {
       if (globalState.MODE === 'KNOWLEDGE_CHECK') {
         await runKnowledgeCheck();
-      } else if (globalState.MODE === 'VIDEOS') {
+      } else if (globalState.MODE === 'VIDEOS' || globalState.MODE === 'COURSE_TOC') {
         await runVideoMark();
       } else if (globalState.MODE === 'ASSESSMENT') {
         await runAssessment();
@@ -843,15 +872,17 @@
         logMsg('error', '⛔ Not on a supported course page. Go to a video, knowledge check, or assessment!');
       }
     } catch (err) {
+      sessionStorage.removeItem('pai_chain_active');
       logMsg('error', `${err.message}`);
     }
 
-    if (globalState.MODE === 'VIDEOS' || globalState.MODE === 'KNOWLEDGE_CHECK') {
+    if (running && (globalState.MODE === 'VIDEOS' || globalState.MODE === 'COURSE_TOC' || globalState.MODE === 'KNOWLEDGE_CHECK')) {
       if (clickAssessmentLink()) {
         logMsg('info', '➡ All content done! Clicked assessment link...');
         setRunning(false);
         return;
       }
+      sessionStorage.removeItem('pai_chain_active');
     }
 
     setRunning(false);
@@ -860,11 +891,11 @@
 
   let autoStartTimer = null;
   function checkAutoStart() {
-    if (running) return;
+    if (running || !sessionStorage.getItem('pai_chain_active') || !shouldShow()) return;
     if (autoStartTimer) return;
     autoStartTimer = setTimeout(() => {
-      if (running) return;
-      const u = window.location.href;
+      if (running || !sessionStorage.getItem('pai_chain_active')) return;
+      const u = window.location.pathname;
       const bodyText = document.body.innerText;
       if (bodyText.length < 30) { autoStartTimer = null; checkAutoStart(); return; }
 
@@ -886,58 +917,38 @@
   }
 
   function clickNextCourseLink() {
-    const links = document.querySelectorAll('nav[aria-label*="تقدم"] a, [class*="NavigationBar"] a');
-    if (!links.length) return false;
-    for (const link of links) {
-      const aria = link.getAttribute('aria-label') || '';
-      const href = link.href || '';
-      if (aria.includes('التالي في المسار') && href.match(/\/courses\//) && !href.match(/\/(videos|assessment|knowledgeCheck)\//)) {
-        link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-        return true;
-      }
-    }
-    return false;
+    const link = PercipioNavigation.findNextCourseLink(document, window.location.href);
+    if (!link) return false;
+    sessionStorage.setItem('pai_chain_active', '1');
+    link.click();
+    return true;
   }
 
   /* ── Auto-show ── */
   function shouldShow() {
-    const u = window.location.href;
+    const u = window.location.pathname;
     return u.includes('/questions') || u.includes('/knowledgeCheck/') || u.includes('/videos/') || u.includes('/assessment/') || u.includes('/journey/') || u.match(/\/courses\/[^/]+\/?$/);
   }
 
-  if (shouldShow()) {
-    setTimeout(() => {
-      panel.classList.add('open');
-      startDonut();
-      checkAutoStart();
-    }, 1500);
-  }
-
-  /* ── Observer & SPA navigation — auto re-scan ── */
-  new MutationObserver(() => {
-    checkAutoStart();
-    if (running) return;
-    if (!panel.classList.contains('open') && shouldShow()) {
-      panel.classList.add('open');
-      rldBtn.click();
-    }
-  }).observe(document.body, { childList: true, subtree: true });
-  window.addEventListener('popstate', () => {
-    if (running) return;
-    autoStartTimer = null;
-    if (shouldShow()) panel.classList.add('open');
-    rldBtn.click();
-  });
-
-  /* Also re-scan on URL change (SPA pushState) */
+  // Navigation updates page context but never opens the panel. Pending changes
+  // are rescanned after a run finishes; previews do not start a new automation.
   let lastUrl = location.href;
-  new MutationObserver(() => {
+  function syncNavigation() {
+    if (location.href === lastUrl) return;
+    panel.classList.remove('open');
+    cancelAnimationFrame(donutAnimId);
+    clearTimeout(autoStartTimer);
+    autoStartTimer = null;
     if (running) return;
-    const cur = location.href;
-    if (cur !== lastUrl) {
-      lastUrl = cur;
-      autoStartTimer = null;
-      rldBtn.click();
-    }
-  }).observe(document.querySelector('title') || document.documentElement, { childList: true, subtree: true, characterData: true });
+    lastUrl = location.href;
+    rldBtn.click();
+    checkAutoStart();
+  }
+  new MutationObserver(syncNavigation).observe(document.documentElement, {
+    childList: true, subtree: true, characterData: true,
+  });
+  window.addEventListener('popstate', syncNavigation);
+  window.addEventListener('hashchange', syncNavigation);
+  setInterval(syncNavigation, 500);
+  checkAutoStart();
 })();

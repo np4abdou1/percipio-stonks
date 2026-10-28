@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Percipio Stonks settings</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { width: 350px; margin: 0; padding: 22px; font: 14px/1.5 system-ui, sans-serif; background: #f8fafc; color: #172033; }
+    h1 { font-size: 20px; margin: 0 0 16px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input { width: 100%; padding: 10px; border: 1px solid #94a3b8; border-radius: 6px; font: inherit; }
+    input:focus { outline: 2px solid #3366cc; outline-offset: 2px; }
+    button { width: 100%; padding: 11px; border: 0; border-radius: 6px; font: inherit; font-weight: 600; background: #3366cc; color: white; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    button.secondary { margin-top: 12px; background: #e2e8f0; color: #172033; }
+    p { color: #475569; margin: 10px 0 16px; }
+    #status { margin-bottom: 0; overflow-wrap: anywhere; }
+    #status.error { color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <h1>Percipio Stonks</h1>
+  <form id="site-form">
+    <label for="subdomain">Your Percipio subdomain</label>
+    <input id="subdomain" type="text" placeholder="kyndryl-centropublico" required autocomplete="off" spellcheck="false" aria-describedby="site-help" disabled>
+    <p id="site-help">Enter the part before .percipio.com, or paste your full HTTPS address.</p>
+    <button id="save" type="submit" disabled>Save &amp; reload Percipio tabs</button>
+  </form>
+  <button id="panel" class="secondary" type="button">Show / hide course panel</button>
+  <p>Only the selected site is enabled. Saving reloads open tabs for the previous and selected site. Your language stays unchanged.</p>
+  <p>The course panel opens only when you ask. Start automation from that panel.</p>
+  <p id="status" role="status" aria-live="polite">Loading settings…</p>
+  <script src="site-config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

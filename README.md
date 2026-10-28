@@ -49,7 +49,23 @@
 ---
 
 
-NOTE : MUST BE USING ARABIC IN ofppt.percipio.com FOR IT TO WORK
+English and Arabic navigation are supported. The extension leaves your language setting unchanged.
+
+### Choose your Percipio site
+
+1. After updating these files, reload the extension once at `chrome://extensions`.
+2. Click the extension icon in Chrome's toolbar.
+3. Enter your subdomain (for example `kyndryl-centropublico`) or paste its full HTTPS address.
+4. Click **Save & reload Percipio tabs**. Approve Chrome's site-access prompt if it appears for a new subdomain.
+
+The default is `kyndryl-centropublico.percipio.com`. Only your selected subdomain runs the extension; the selection survives browser restarts. Saving reloads open tabs on the old and new sites. If neither is open, visit the selected site yourself. No extension re-import or file edits are needed when switching sites.
+
+The course panel starts closed. Use **Show / hide course panel** in the extension popup to open it, then click **START AUTOMATION**. Link previews, status messages, and page changes never open the panel automatically. Navigation closes it; an automation you already started can continue chaining through courses while the panel remains closed. Merely visiting an assessment no longer starts a new run.
+
+The next-course handler recognizes `rel="next"`, navigation markers, and English labels such as **Next Item**, **Next Course**, and **Next in path**, as well as Arabic labels. It follows visible links to another course on the same site. If no matching next-course link exists, it stops on the current page. Knowledge-check buttons use language-independent `data-marker` attributes.
+
+Developer checks: `node --test tests/*.test.js` and `node test_solver.js`. The tests use local fixtures and mocked Chrome APIs; they do not submit anything to Percipio.
+
 ## 🚀 Features
 
 | Mode | Target Pages | Automation Action |
@@ -103,8 +119,8 @@ To load the extension in developer mode, follow these steps:
 
 ## 🎮 Usage Guide
 
-1. Navigate to any Percipio course page.
-2. Click the **START AUTOMATION** button.
+1. Navigate to a course on your selected Percipio site.
+2. Open the extension popup, click **Show / hide course panel**, then click **START AUTOMATION**.
 3. The extension will automatically transition between sections:
    - Mark videos as watched
    - Bypassing Knowledge Checks ( not important any more )

@@ -2,16 +2,18 @@
   "manifest_version": 3,
   "name": "Percipio Stonks",
   "version": "1.0",
+  "minimum_chrome_version": "102",
   "description": "Automatically completes courses, knowledge checks, and assessments on Percipio",
   "icons": { "48": "icon.png", "128": "icon.png" },
   "host_permissions": [
-    "https://ofppt.percipio.com/*"
+    "https://kyndryl-centropublico.percipio.com/*"
   ],
-  "content_scripts": [{
-    "matches": ["https://ofppt.percipio.com/*"],
-    "js": ["content.js"],
-    "run_at": "document_end"
-  }],
+  "permissions": ["storage", "scripting"],
+  "optional_host_permissions": ["https://*.percipio.com/*"],
+  "action": {
+    "default_title": "Percipio Stonks settings",
+    "default_popup": "popup.html"
+  },
   "background": {
     "service_worker": "background.js"
   }
